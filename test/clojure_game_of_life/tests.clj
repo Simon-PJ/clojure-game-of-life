@@ -35,4 +35,21 @@
     
     (testing "Two neighbours"
         (let [world [[0 0 0] [1 1 1] [0 0 0]]]
-            (is (= (next-iteration world) [[0 0 0] [0 1 0] [0 0 0]])))))
+            (is (= (next-iteration world) [[0 0 0] [0 1 0] [0 0 0]]))))
+            
+    (testing "Three neighbours"
+        (let [world [[0 1 0] [1 1 1] [0 0 0]]]
+            (is (= (next-iteration world) [[0 1 0] [1 1 1] [0 0 0]])))))
+
+(deftest rule-three
+    "Any live cell with more than three live neighbours dies, as if by overpopulation"
+    
+    (testing "Four neighbours"
+        (let [world [[0 1 0] [1 1 1] [0 1 0]]]
+            (is (= (next-iteration world) [[0 1 0] [1 0 1] [0 1 0]])))))
+
+(deftest rule-four
+    "Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction"
+    
+    (let [world [[0 1 0] [1 0 0] [0 0 1]]]
+        (is (= (next-iteration world) [[0 0 0] [0 1 0] [0 0 0]]))))

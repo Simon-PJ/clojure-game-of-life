@@ -48,12 +48,15 @@
     [x y world]
     (count (filter #(= (% x y world) 1) neighbours)))
 
-(defn enforce-rule-two
+(defn enforce-rules
     "Any live cell with two or three live neighbours lives on to the next generation"
     [x y world]
-    (if (= (neighbour-count x y world) 2)
-        (get-cell-value x y world)
-        0))
+    (let [num-neighbours (neighbour-count x y world)]
+        (if (<= 2 num-neighbours 3)
+            (if (= num-neighbours 3)
+                1
+                (get-cell-value x y world))
+            0)))
 
 (defn next-iteration
     "Calculates the next iteration of game of life from the previous iteration"
@@ -61,6 +64,6 @@
     (map-indexed 
         (fn [row-index row] 
             (map-indexed 
-                (fn [col-index cell] (enforce-rule-two col-index row-index world)) 
+                (fn [col-index cell] (enforce-rules col-index row-index world)) 
                 row))
         world))
