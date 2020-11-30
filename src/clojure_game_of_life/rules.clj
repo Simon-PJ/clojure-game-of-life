@@ -3,7 +3,7 @@
 (defn generate-world
     "Generates a new game of life world from the given size"
     [size]
-    (map #(repeat size %) (repeat size 0)))
+    (partition size (take (* size size) (repeatedly #(rand-int 2)))))
 
 (defn get-cell-value
     [x y world]

@@ -1,48 +1,33 @@
 (ns clojure-game-of-life.core
   (:require [quil.core :as q]
-            [quil.middleware :as m]))
+            [quil.middleware :as m]
+            [clojure-game-of-life.rules :as g]))
+
+(def world-size 50)
+(def cell-size 10)
 
 (defn setup []
-  ; Set frame rate to 30 frames per second.
   (q/frame-rate 30)
-  ; Set color mode to HSB (HSV) instead of default RGB.
-  (q/color-mode :hsb)
-  ; setup function returns initial state. It contains
-  ; circle color and position.
-  {:color 0
-   :angle 0})
+  (q/color-mode :rgb)
+  (g/generate-world world-size))
 
 (defn update-state [state]
-  ; Update sketch state by changing circle color and position.
-  {:color (mod (+ (:color state) 0.7) 255)
-   :angle (+ (:angle state) 0.1)})
+  (g/next-iteration state))
 
 (defn draw-state [state]
-  ; Clear the sketch by filling it with light-grey color.
-  (q/background 240)
-  ; Set circle color.
-  (q/fill (:color state) 255 255)
-  ; Calculate x and y coordinates of the circle.
-  (let [angle (:angle state)
-        x (* 150 (q/cos angle))
-        y (* 150 (q/sin angle))]
-    ; Move origin point to the center of the sketch.
-    (q/with-translation [(/ (q/width) 2)
-                         (/ (q/height) 2)]
-      ; Draw the circle.
-      (q/ellipse x y 100 100))))
-
+  (q/background 0)
+  (q/fill 250 0 0)
+  (q/no-stroke)
+  (doseq [x (range 0 world-size)]
+    (doseq [y (range 0 world-size)]
+      (if (= (g/get-cell-value x y state) 1)
+        (q/rect (* x cell-size) (* y cell-size) cell-size cell-size)))))
 
 (q/defsketch clojure-game-of-life
-  :title "You spin my circle right round"
+  :title "Game of Life"
   :size [500 500]
-  ; setup function called only once, during sketch initialization.
   :setup setup
-  ; update-state is called on each iteration before draw-state.
   :update update-state
   :draw draw-state
   :features [:keep-on-top]
-  ; This sketch uses functional-mode middleware.
-  ; Check quil wiki for more info about middlewares and particularly
-  ; fun-mode.
   :middleware [m/fun-mode])
